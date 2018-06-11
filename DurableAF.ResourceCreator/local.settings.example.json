@@ -1,0 +1,15 @@
+﻿{
+	"IsEncrypted": false,
+	"Values": {
+		"AzureWebJobsStorage": "UseDevelopmentStorage=true",
+		"AzureWebJobsDashboard": "UseDevelopmentStorage=true"
+	},
+	"AzureApplication": {
+		"ClientID": "guid",
+		"ClientSecret": "secret"
+	},
+	"CustomerInfo": {
+		"TenantID": "guid",
+		"SubscriptionID": "guid"
+	} 
+}
