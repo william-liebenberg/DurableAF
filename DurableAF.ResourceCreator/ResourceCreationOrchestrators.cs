@@ -8,23 +8,6 @@ using Microsoft.Rest.Azure;
 
 namespace DurableAF.ResourceCreator
 {
-	public class AzureApplication
-	{
-		public string ClientID { get; set; }
-		public string ClientSecret { get; set; }
-	}
-
-	public class CreationParameters
-	{
-		public string AzureResourceLocation { get; set; } = "Australia Southeast";
-		public string CreatorName { get; set; }
-		public string TenantID { get; set; }
-		public string SubscriptionID { get; set; }
-		public string ResourceGroupName { get; set; }
-		public string CustomerShortName { get; set; }
-		public string Environment { get; set; }
-	}
-
 	public static class ResourceCreationOrchestrators
 	{
 		[FunctionName(nameof(StartCreateResources))]
@@ -116,11 +99,11 @@ namespace DurableAF.ResourceCreator
 			}
 
 			// site resources (sql server, sql db, redis cache, storageAccount (record attachments), ???)
-			var storageRequest = ResourceCreationActivities.CreateStorageAccountRequest.FromCreationParams(creationParams);
+			var storageRequest = CreateStorageAccountRequest.FromCreationParams(creationParams);
 			storageRequest.StorageAccountName = ResourceCreationActivities.GenerateStorageAccountName(creationParams, string.Empty);
 
 			var t1 = context.CallSubOrchestratorAsync(nameof(CreateSiteSqlServerAndDatabase), creationParams);
-			var t2 = context.CallActivityAsync<ResourceCreationActivities.CreateStorageAccountResult>(nameof(ResourceCreationActivities.CreateStorageAccount), storageRequest);
+			var t2 = context.CallActivityAsync<CreateStorageAccountResult>(nameof(ResourceCreationActivities.CreateStorageAccount), storageRequest);
 			await Task.WhenAll(t1, t2);
 
 			if (!context.IsReplaying)
@@ -208,11 +191,11 @@ namespace DurableAF.ResourceCreator
 			//	},
 			//	creationParams);
 			
-			var storageRequest = ResourceCreationActivities.CreateStorageAccountRequest.FromCreationParams(creationParams);
+			var storageRequest = CreateStorageAccountRequest.FromCreationParams(creationParams);
 			storageRequest.StorageAccountName = ResourceCreationActivities.GenerateStorageAccountName(creationParams, "logs");
 
 			var t1 = context.CallSubOrchestratorAsync(nameof(CreateCustomerAppServicePlan), creationParams);
-			var t2 = context.CallActivityAsync<ResourceCreationActivities.CreateStorageAccountResult>(nameof(ResourceCreationActivities.CreateStorageAccount), storageRequest);
+			var t2 = context.CallActivityAsync<CreateStorageAccountResult>(nameof(ResourceCreationActivities.CreateStorageAccount), storageRequest);
 
 			await Task.WhenAll(t1, t2);
 

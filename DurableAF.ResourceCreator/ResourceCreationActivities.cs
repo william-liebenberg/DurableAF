@@ -17,7 +17,7 @@ using SkuName = Microsoft.Azure.Management.Storage.Models.SkuName;
 
 namespace DurableAF.ResourceCreator
 {
-	public static class ResourceCreationActivities
+	public static partial class ResourceCreationActivities
 	{
 		public static readonly IServiceProvider Container = new ContainerBuilder()
 			.RegisterModule(new ResourceCreatorComposition())
@@ -67,7 +67,7 @@ namespace DurableAF.ResourceCreator
 			var websiteClientProvider = Container.GetService<IAzureClientProvider<IWebSiteManagementClient>>();
 			var websiteClient = await websiteClientProvider.Get(creationParams.TenantID, creationParams.SubscriptionID);
 
-			string aspName = "srz-" + creationParams.CustomerShortName + "-app2";
+			string aspName = creationParams.CustomerShortName + "-asp";
 
 			//"sku": {
 			//	"name": "S1",
@@ -216,32 +216,6 @@ namespace DurableAF.ResourceCreator
 			await Task.Delay(5000);
 
 			log.LogWarning($"Deploying WebJob Artifact in Resource Group: {creationParams.ResourceGroupName}");
-		}
-
-		public class CreateStorageAccountRequest : CreationParameters
-		{
-			public string StorageAccountName { get; set; }
-
-			public static CreateStorageAccountRequest FromCreationParams(CreationParameters creationParams)
-			{
-				return new CreateStorageAccountRequest()
-				{
-					ResourceGroupName = creationParams.ResourceGroupName,
-					AzureResourceLocation = creationParams.AzureResourceLocation,
-					CustomerShortName = creationParams.CustomerShortName,
-					CreatorName = creationParams.CreatorName,
-					Environment = creationParams.Environment,
-					SubscriptionID = creationParams.SubscriptionID,
-					TenantID = creationParams.TenantID
-				};
-			}
-		}
-
-		public class CreateStorageAccountResult
-		{
-			public string StorageAccountName { get; set; }
-			public StorageAccountKey PrimaryKey { get; set; }
-			public string BlobUrl { get; set; }
 		}
 
 		[FunctionName(nameof(CreateStorageAccount))]
